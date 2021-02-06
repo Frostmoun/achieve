@@ -42,11 +42,10 @@ table.columns = table.loc[0].ffill() + table.loc[1].fillna("")
 table.fillna("", inplace=True)
 table = table.drop(len(table) - 1)
 table = table.drop(labels=[0,1],axis=0)
-
+table = table.query('状态 != "取消开台"')
 
 table["日期"] = table["日期"].apply(lambda x: str(datetime.datetime.now().year) +"-"+ str(x) if int(x[0:2]) <= datetime.datetime.now().month else str(datetime.datetime.now().year - 1) +"-"+ str(x))
 table["日期主单"] = table["日期"].apply(lambda x: x.replace("-", "")) + table['主单']
-table["日期主单"] = table["日期主单"].apply(lambda x: x.replace("R", ""))
 
 table[['日期主单', '计提成小计', '无业绩体验卡', '花单点舞小计', '计提成小计', '无业绩小计']] = table[['日期主单', '计提成小计', '无业绩体验卡', '花单点舞小计', '计提成小计', '无业绩小计']].apply(pd.to_numeric)
 for each in EXTRA_ACHIEVE:
