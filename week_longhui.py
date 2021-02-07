@@ -6,22 +6,12 @@ import openpyxl as op
 import datetime
 
 
-# 业绩外支付项目
 # 部门列表
 DEPARTS = ["销-2部", "销-3部", "销-5部", "销-6部", "销-8部", "销-9部", "市场部", "国际部", "资-香槟组", "资-Bgo无底薪", "资-Bgo有底薪"]
 MAIN_DEPARTS = ["销-2部", "销-3部", "销-5部", "销-6部", "销-8部", "销-9部", "市场部", "国际部", "资源部"]
 # 桌面路径
 DIR_DESKTOP = os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/")+"/"
 
-# 读取文件
-# plan = pd.read_excel(DIR_DESKTOP + "稽核/仓库/基础数据.xlsx", sheet_name="现抽方案")
-# staff = pd.read_excel(DIR_DESKTOP + "稽核/仓库/基础数据.xlsx", sheet_name="艺人名单")
-# detail = pd.read_excel(DIR_DESKTOP + "落单明细.xlsx").fillna("")
-# table = pd.read_excel(DIR_DESKTOP + "营业日报.xlsx", header=None)
-# total_award = pd.read_excel(DIR_DESKTOP + "/稽核/仓库/现抽汇总表.xlsx", sheet_name='汇总')
-# total_basket = pd.read_excel(DIR_DESKTOP + "/稽核/仓库/花单汇总表.xlsx", sheet_name='汇总')
-# total_air = pd.read_excel(DIR_DESKTOP + "/稽核/仓库/礼炮汇总表.xlsx", sheet_name='汇总')
-# total_achieve = pd.read_excel(DIR_DESKTOP + "/稽核/仓库/业绩汇总表.xlsx", sheet_name='汇总')
 
 
 # ? 输出文件
