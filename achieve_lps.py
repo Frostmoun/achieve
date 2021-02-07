@@ -16,8 +16,8 @@ DIR_DESKTOP = os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/"
 plan = pd.read_excel(DIR_DESKTOP + "/仓库/基础数据.xlsx", sheet_name="现抽方案")
 staff = pd.read_excel(DIR_DESKTOP + "/仓库/基础数据.xlsx", sheet_name="艺人名单")
 main_depart = pd.read_excel(DIR_DESKTOP + "/仓库/基础数据.xlsx", sheet_name="部门")
-detail = pd.read_excel(os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/") + "/落单明细_lps.xlsx")
-table = pd.read_excel(os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/") + "/营业日报_lps.xlsx", header=None)
+detail = pd.read_excel(os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/") + "/落单明细_lps.xlsx", convert_float=False, skipfooter=1)
+table = pd.read_excel(os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/") + "/营业日报_lps.xlsx", header=None, skipfooter=1)
 total_award = pd.read_excel(DIR_DESKTOP + "/仓库/现抽汇总表.xlsx", sheet_name='汇总')
 total_basket = pd.read_excel(DIR_DESKTOP + "/仓库/花单汇总表.xlsx", sheet_name='汇总')
 total_air = pd.read_excel(DIR_DESKTOP + "/仓库/礼炮汇总表.xlsx", sheet_name='汇总')
@@ -25,7 +25,7 @@ total_achieve = pd.read_excel(DIR_DESKTOP + "/仓库/业绩汇总表.xlsx", shee
 task_week = pd.read_excel(DIR_DESKTOP + "/周报/每周任务.xlsx", sheet_name='周任务')
 task_month = pd.read_excel(DIR_DESKTOP + "/周报/每周任务.xlsx", sheet_name='月任务')
 
-detail = detail.drop(len(detail) - 1)
+# detail = detail.drop(len(detail) - 1)
 day = detail['日期'].max()
 month = datetime.datetime.strptime(day,'%Y-%m-%d').strftime('%Y-%m')
 # 保存路径
@@ -39,14 +39,13 @@ writer_total_achieve = pd.ExcelWriter(DIR_DESKTOP + "/业绩汇总.xlsx")
 
 table.columns = table.loc[0].ffill() + table.loc[1].fillna("")
 table.fillna("", inplace=True)
-table = table.drop(len(table) - 1)
+# table = table.drop(len(table) - 1)
 table = table.drop(labels=[0,1],axis=0)
-table = table.query('状态 != "取消开台"')
+table = table.query('状态 != "取消预订"')
 
 
 table["日期"] = table["日期"].apply(lambda x: str(datetime.datetime.now().year) +"-"+ str(x) if int(x[0:2]) <= datetime.datetime.now().month else str(datetime.datetime.now().year - 1) +"-"+ str(x))
 table["日期主单"] = table["日期"].apply(lambda x: x.replace("-", "")) + table['主单']
-
 table[['日期主单', '计提成小计', '无业绩体验卡', '花单点舞小计', '计提成小计', '无业绩小计']] = table[['日期主单', '计提成小计', '无业绩体验卡', '花单点舞小计', '计提成小计', '无业绩小计']].apply(pd.to_numeric)
 for each in EXTRA_ACHIEVE:
     if each in table.columns:
@@ -83,16 +82,13 @@ total_award.to_excel(DIR_DESKTOP + "/仓库/现抽汇总表.xlsx", sheet_name='�
 seller_award = seller_award[['日期', '房台', '酒水项目', '单价', '订房部门', '订房人', '支付方式', '数量', '订房现抽']].query('日期 == @day & 支付方式!="挂账"').sort_values(by='单价').reset_index()
 seller_award.loc['合计']= seller_award[['数量', '订房现抽']].apply(lambda x:x.sum())
 del seller_award['index']
-# 副卡点舞提成
-second_card = pd.pivot_table(re.query('酒水项目 == "点舞(副卡专用)" & 日期 == @day'), index=['日期', '房台', '酒水项目'], values=['数量', '落单金额'], aggfunc={'数量':np.sum, '落单金额':np.sum}, margins=True).reset_index()
-second_card['提成金额'] = second_card['落单金额']*0.15
+
 
 
 
 # 保存每日现抽  
 girl_award.to_excel(writer, sheet_name="资源现抽")
 seller_award.to_excel(writer, sheet_name="销售现抽")
-second_card.to_excel(writer, sheet_name="副卡点舞")
 
 
 # 保存现抽汇总表

@@ -6,10 +6,9 @@ import openpyxl as op
 import datetime
 
 
-# 业绩外支付项目
 # 部门列表
-DEPARTS = ["销-2部", "销-3部", "销-5部", "销-6部", "销-8部", "销-9部", "市场部", "国际部", "资-香槟组", "资-Bgo无底薪", "资-Bgo有底薪"]
-MAIN_DEPARTS = ["销-2部", "销-3部", "销-5部", "销-6部", "销-8部", "销-9部", "市场部", "国际部", "资源部"]
+DEPARTS = ["销-销售1部", "销-销售2部", "销-销售5部", "销-销售6部", "销-销售7部", "销-销售8部", "销-销售9部", "国际部", "市场部", '出品部', '先锋团', '独立团',  '独-2部', '独-1部', '独-3部', '会员中心', '运营部','礼宾部', '工程部', '资-B组', '资-气氛1部']
+MAIN_DEPARTS = ["销-销售1部", "销-销售2部", "销-销售5部", "销-销售6部", "销-销售7部", "销-销售8部", "销-销售9部", "国际部", "市场部", '先锋团', '独立团', '会员中心', '运营部', '资源部']
 # 桌面路径
 DIR_DESKTOP = os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/")+"/"
 
@@ -25,26 +24,27 @@ DIR_DESKTOP = os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/"
 
 
 # ? 输出文件
-week_report = pd.ExcelWriter(DIR_DESKTOP + "/稽核/隆回/周报/周报.xlsx")
+week_report = pd.ExcelWriter(DIR_DESKTOP + "/稽核/六盘水/周报/周报.xlsx")
 
-main = pd.read_excel(DIR_DESKTOP + "/稽核/隆回/仓库/业绩汇总表.xlsx", sheet_name='汇总')
-detail = pd.read_excel(DIR_DESKTOP + "/稽核/隆回/落单明细(检查用).xlsx", sheet_name='Sheet1')
+main = pd.read_excel(DIR_DESKTOP + "/稽核/六盘水/仓库/业绩汇总表.xlsx", sheet_name='汇总')
+detail = pd.read_excel(DIR_DESKTOP + "/稽核/六盘水/落单明细(检查用).xlsx", sheet_name='Sheet1')
 
 # 周报
 weeknum = main['周数'].max()
+monthnum = main['月份'].max()
 # 部门 周基本数据:台数 台类型  营业额  业绩  任务   完成率    赠送    部门个人数据
 # * 周部门数据对比
 week_depart = pd.pivot_table(main.query('周数 in [@weeknum, @weeknum-1] & 部门 in @DEPARTS'), index='部门', columns='周数', values=['房台','实际业绩','营业总收入'], aggfunc={'房台':'count', '实际业绩':np.sum,'营业总收入':np.sum})
 # ! 周个人数据对比
 week_person = pd.pivot_table(main.query('周数 in [@weeknum, @weeknum-1] & 主部门 in @MAIN_DEPARTS'), index=['主部门','订台人'], columns='周数', values=['房台','实际业绩','营业总收入'], aggfunc={'房台':'count', '实际业绩':np.sum,'营业总收入':np.sum}).reset_index()
 # // 赠送数据
-donate = pd.pivot_table(detail.query('主部门 in @MAIN_DEPARTS & 类型 =="经理赠送" & (落单人部门 in @MAIN_DEPARTS | 落单人 in ["王秀军2","卢涛","李文"])'), index='主部门', values='金额', aggfunc={'金额':np.sum})
+donate = pd.pivot_table(detail.query('主部门 in @MAIN_DEPARTS & 类型 =="经理赠送" & (落单_部门 in @MAIN_DEPARTS | 落单_员工 in ["王秀军2","卢涛","李文"])'), index='主部门', values='落单金额', aggfunc={'落单金额':np.sum})
 
 # ? 周完成率
 week_rate = pd.pivot_table(main.query('周数==@weeknum & 主部门 in @MAIN_DEPARTS'), index='主部门', values=['周业绩任务', '实际业绩', '周完成率'], aggfunc={'周业绩任务':np.mean, '实际业绩':np.sum, '周完成率':np.sum})
 
 # ? 月完成率
-month_rate = pd.pivot_table(main.query('主部门 in @MAIN_DEPARTS'), index='主部门', values=['月业绩任务', '实际业绩', '月完成率'], aggfunc={'月业绩任务':np.mean, '实际业绩':np.sum, '月完成率':np.sum})
+month_rate = pd.pivot_table(main.query('主部门 in @MAIN_DEPARTS &月份 == @monthnum'), index='主部门', values=['月业绩任务', '实际业绩', '月完成率'], aggfunc={'月业绩任务':np.mean, '实际业绩':np.sum, '月完成率':np.sum})
 
 
 # ? 每日营业额
