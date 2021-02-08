@@ -45,7 +45,7 @@ table = table.query('状态 != "取消预订"')
 table["日期"] = table["日期"].apply(lambda x: str(datetime.datetime.now().year) +"-"+ str(x) if int(x[0:2]) <= datetime.datetime.now().month else str(datetime.datetime.now().year - 1) +"-"+ str(x))
 table["日期主单"] = table["日期"].apply(lambda x: x.replace("-", "")) + table['主单']
 
-table[['日期主单', '计提成小计', '无业绩体验卡', '花单点舞小计', '计提成小计', '无业绩小计']] = table[['日期主单', '计提成小计', '无业绩体验卡', '花单点舞小计', '计提成小计', '无业绩小计']].apply(pd.to_numeric)
+table[['日期主单', '无业绩开台费','无业绩小费类', '无业绩赔偿类', '花单点舞小计', '计提成小计', '无业绩小计']] = table[['日期主单', '无业绩开台费','无业绩小费类', '无业绩赔偿类', '花单点舞小计', '计提成小计', '无业绩小计']].apply(pd.to_numeric)
 for each in EXTRA_ACHIEVE:
     if each in table.columns:
         table[each] = table[each].apply(pd.to_numeric)
@@ -113,7 +113,7 @@ for each in EXTRA_ACHIEVE:
         main['实际业绩'] = main['实际业绩'] - main[each]
 
 main['主营业务收入'] = main['实际业绩'] + main['气氛道具扣除'] + main['订房现抽_y']
-main['营业外收入'] = main['无业绩小计'] - main['无业绩体验卡'] + main['花单点舞小计'] 
+main['营业外收入'] = main['无业绩开台费'] + main['无业绩小费类'] + main['花单点舞小计'] + main['无业绩赔偿类']
 main['营业总收入'] = main['主营业务收入'] + main['营业外收入'] 
 main['检验值'] =main['营业总收入'] - main['主营业务收入'] - main['营业外收入'] + main['实际业绩'] + main['气氛道具扣除'] + main['订房现抽_y'] - main['计提成小计'] 
 
