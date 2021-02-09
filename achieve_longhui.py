@@ -4,7 +4,6 @@ import os
 import numpy as np
 import openpyxl as op
 import datetime
-
 # 业绩外支付项目
 EXTRA_ACHIEVE = ['支付围台酒水', '支付职能招待', '支付宴请酒水', '支付会员权益'] 
 # 部门列表
@@ -18,7 +17,8 @@ DIR_ROOT = "稽核/隆回"
 plan = pd.read_excel(DIR_ROOT + "/仓库/基础数据.xlsx", sheet_name="现抽方案")
 staff = pd.read_excel(DIR_ROOT + "/仓库/基础数据.xlsx", sheet_name="艺人名单")
 main_depart = pd.read_excel(DIR_ROOT + "/仓库/基础数据.xlsx", sheet_name="部门")
-detail = pd.read_excel(DIR_DESKTOP + "/下载/落单明细_lh.xlsx", skipfooter=1)
+
+detail = pd.read_excel(DIR_DESKTOP + "/下载/落单明细_lh.xlsx", skipfooter=1, convert_float=False)
 table = pd.read_excel(DIR_DESKTOP + "/下载/营业日报_lh.xlsx", header=None, skipfooter=1)
 total_award = pd.read_excel(DIR_ROOT + "/仓库/现抽汇总表.xlsx", sheet_name='汇总')
 total_basket = pd.read_excel(DIR_ROOT + "/仓库/花单汇总表.xlsx", sheet_name='汇总')
@@ -69,9 +69,10 @@ total_basket = total_basket.append(girl_award).drop_duplicates(keep ='first', in
 total_basket.to_excel(DIR_ROOT + "/仓库/花单汇总表.xlsx", sheet_name='汇总', index=False)
 
 # 花单现抽
-girl_award = pd.pivot_table(re.query('艺人部门=="资-B组" & 日期 == @day & 艺人 != ""' ), index=['日期', '艺人部门', '艺人','房台', '酒水类别', '支付方式'], values=['数量', '落单金额'], aggfunc={'数量':np.sum, '落单金额':np.sum}, margins=True).reset_index()
-girl_award['提成金额'] = girl_award['落单金额']*0.5
-girl_award.loc[girl_award['支付方式'] == "会员本金", '提成金额'] = girl_award['落单金额']*0.4
+girl_award = pd.pivot_table(re.query('艺人部门=="资-B组" & 日期 == @day & 艺人 != ""' ), index=['日期', '艺人部门', '艺人','房台', '酒水类别', '支付方式'], values=['数量', '落单金额'], aggfunc={'数量':np.sum, '落单金额':np.sum}).reset_index()
+print(girl_award)
+# girl_award['提成金额'] = girl_award['落单金额']*0.5
+# girl_award.loc[girl_award['支付方式'] == "会员本金", '提成金额'] = girl_award['落单金额']*0.4
 # 销售现抽
 seller_award = pd.pivot_table(re.query('支付方式 != "围台酒水" & 房台 !="外卖台"'), index=['日期主单','落单_时间','日期', '房台', '酒水项目', '单价', '订房部门', '订房人', '支付方式'], values=['数量', '订房现抽'], aggfunc={'数量':np.sum, '订房现抽':np.sum}).query('订房现抽 != 0').reset_index()
 # 更新现抽汇总表, 去掉重复项, 按时间排序
@@ -88,10 +89,10 @@ second_card['提成金额'] = second_card['落单金额']*0.15
 
 
 
-# 保存每日现抽  
+# 保存每日现抽 
 girl_award.to_excel(writer, sheet_name="资源现抽")
-seller_award.to_excel(writer, sheet_name="销售现抽")
-second_card.to_excel(writer, sheet_name="副卡点舞")
+# seller_award.to_excel(writer, sheet_name="销售现抽")
+# second_card.to_excel(writer, sheet_name="副卡点舞")
 
 
 # 保存现抽汇总表
