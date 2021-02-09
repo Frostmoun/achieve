@@ -11,7 +11,7 @@ EXTRA_ACHIEVE = ['支付会员卡赠', '支付代金券', '支付职能招待','
 DEPARTS = ["销-销售1部", "销-销售2部", "销-销售5部", "销-销售6部", "销-销售7部", "销-销售8部", "销-销售9部", "国际部", "市场部", '出品部', '先锋团', '独立团',  '独-2部', '独-1部', '独-3部', '会员中心', '运营部']
 # 桌面路径
 DIR_ROOT = "稽核/六盘水"
-DIR_DESKTOP = os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/")+"/稽核/六盘水"
+DIR_DESKTOP = os.path.join(os.path.expanduser("~"), 'Desktop').replace("\\", "/")
 # 读取文件
 plan = pd.read_excel(DIR_ROOT + "/仓库/基础数据.xlsx", sheet_name="现抽方案")
 staff = pd.read_excel(DIR_ROOT + "/仓库/基础数据.xlsx", sheet_name="艺人名单")
